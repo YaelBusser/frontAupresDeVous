@@ -21,20 +21,18 @@ export default function Login() {
                 return;
             }
 
-            const response = await axios.post('http://localhost:4001/auth/login', {
+            await axios.post('http://localhost:4001/auth/login', {
                 email,
                 password,
-            });
-
-            if (response && response.data && response.data.token) {
-                await AsyncStorage.setItem('token', response.data.token);
-                Alert.alert('Connexion réussie', response.data.message);
+            }).then((response) => {
+                AsyncStorage.setItem('token', response.data.token);
                 navigation.navigate('Home');
-            } else {
-                setError('Erreur lors de la connexion. Veuillez réessayer.');
-            }
+            }).catch((err) => {
+                setError(err.response.data.message);
+            });
         } catch (error) {
-            setError(error.response.data.message || 'Erreur lors de la connexion.');
+            console.log(error);
+            setError(error.response?.data.message || 'Erreur lors de la connexion.');
         }
     };
 
